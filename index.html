@@ -1238,16 +1238,21 @@ window.onload = () => {
     window.location.href = "start.html";
   }
 
-  function syncToFirebase() {
+function syncToFirebase() {
     if (playerName && eid) {
       // ⚠️ هذا السطر مهم جداً لمنع توقف الكود إذا احتوى الاسم على رموز
       const safeKey = playerName.replace(/[.#$\[\]\/]/g, "_");
       
+      // جلب جميع الجوائز التي فاز بها اللاعب من السجل المحلي
+      const h = JSON.parse(localStorage.getItem("eid_history") || "[]");
+      // استخراج أسماء الجوائز ودمجها في نص واحد (مثال: ايفون، 50 ريال)
+      const wonPrizes = h.map(x => x.prize).join("، ");
+
       database.ref('eids/' + eid + '/users/' + safeKey).set({
         name: playerName,
         balance: balance,
         spins: totalSpins,
-        bestPrize: bestPrize,
+        prizesWon: wonPrizes || "لا يوجد", // إرسال أسماء الجوائز بدلاً من الرصيد المالي فقط
         lastActive: new Date().toLocaleString('ar-SA')
       }).catch(err => console.log("خطأ في الاتصال بالسحابة: ", err));
     }
@@ -1266,10 +1271,12 @@ window.onload = () => {
 
   database.ref('eids/' + eid + '/prizes').on('value', (snapshot) => {
     const dbPrizes = snapshot.val();
+    
+    // تصفير المصفوفات دائماً لاستقبال التحديثات
+    PRIZES.length = 0;
+    BOX_PRIZES.length = 0;
+    
     if (dbPrizes) {
-      PRIZES.length = 0;
-      BOX_PRIZES.length = 0;
-      
       let i = 0;
       for (let key in dbPrizes) {
         let p = dbPrizes[key];
@@ -1287,17 +1294,23 @@ window.onload = () => {
         BOX_PRIZES.push({
           label: p.name,
           value: val,
-          big: (val >= 100)
+          big: (val >= 100 || p.type === 'gift') // الهدية العينية تعتبر جائزة كبرى
         });
         
         i++;
       }
-      
-      if (typeof buildWheel === "function") buildWheel();
-      if (typeof buildBoxes === "function") buildBoxes();
+    } else {
+      // إذا قام المدير بحذف كل الجوائز، نظهر رسالة انتظار بدلاً من كسر أو تعليق العجلة
+      PRIZES.push({label: "في انتظار الجوائز", value: 0, color: "#1e293b", textCol: "#94a3b8"});
+      BOX_PRIZES.push({label: "لا يوجد جوائز", value: 0, big: false});
     }
+    
+    // إعادة بناء العجلة والصناديق لتطبيق التغييرات أو الحذف فوراً
+    if (typeof buildWheel === "function") buildWheel();
+    if (typeof buildBoxes === "function") buildBoxes();
   });
 </script>
 </body>
 </html>
+
 
