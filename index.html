@@ -643,8 +643,8 @@ let totalSpins = 0;
 let bestPrize  = 0;
 let wheelRot   = 0;
 let spinning   = false;
-let currentGame = ""; // 'wheel' or 'boxes'
-let globalResetTime = 0; // متغير لمعرفة متى تم تصفير العداد من قبل المدير
+let currentGame = "";
+let globalResetTime = 0;
 
 // ============================================================
 //  PARTICLES
@@ -654,6 +654,7 @@ const ctx    = canvas.getContext("2d");
 let particles = [];
 
 function resizeCanvas() {
+  if(!canvas) return;
   canvas.width  = window.innerWidth;
   canvas.height = window.innerHeight;
 }
@@ -663,6 +664,7 @@ window.addEventListener("resize", resizeCanvas);
 class Particle {
   constructor() { this.reset(); }
   reset() {
+    if(!canvas) return;
     this.x  = Math.random() * canvas.width;
     this.y  = Math.random() * canvas.height;
     this.r  = Math.random() * 1.5 + 0.3;
@@ -671,6 +673,7 @@ class Particle {
     this.a  = Math.random() * 0.5 + 0.1;
   }
   update() {
+    if(!canvas) return;
     this.x += this.vx; this.y += this.vy;
     if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
   }
@@ -684,6 +687,7 @@ class Particle {
 for (let i = 0; i < 90; i++) particles.push(new Particle());
 
 function animParticles() {
+  if(!canvas) return;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   particles.forEach(p => { p.update(); p.draw(); });
   for (let i = 0; i < particles.length; i++) {
@@ -710,7 +714,9 @@ animParticles();
 // ============================================================
 function buildWheel() {
   const g = document.getElementById("wheel-g");
+  if(!g) return;
   const n = PRIZES.length;
+  if(n === 0) return;
   const a = 360 / n;
   g.innerHTML = "";
 
@@ -758,13 +764,12 @@ function buildWheel() {
 //  SPIN
 // ============================================================
 function spinWheel() {
-  if (spinning) return;
+  if (spinning || PRIZES.length === 0) return;
 
   const now = Date.now();
   const lastSpin = localStorage.getItem("last_wheel_time");
   const dayInMillis = 24 * 60 * 60 * 1000;
 
-  // التحقق من الوقت مع تجاهل العداد إذا قام المدير بالتصفير
   if (lastSpin && parseInt(lastSpin) > globalResetTime && (now - parseInt(lastSpin) < dayInMillis)) {
     const remaining = dayInMillis - (now - parseInt(lastSpin));
     const hours = Math.floor(remaining / (1000 * 60 * 60));
@@ -779,10 +784,12 @@ function spinWheel() {
   const btn = document.getElementById("spin-btn");
   const status = document.getElementById("wheel-status");
   const pointer = document.getElementById("wheel-pointer");
-  btn.disabled = true;
-  pointer.classList.add("spinning");
-  status.className = "";
-  status.innerHTML = `<span style="color:var(--text-muted)">🎡 تدور العجلة...</span>`;
+  if(btn) btn.disabled = true;
+  if(pointer) pointer.classList.add("spinning");
+  if(status) {
+    status.className = "";
+    status.innerHTML = `<span style="color:var(--text-muted)">🎡 تدور العجلة...</span>`;
+  }
 
   const n = PRIZES.length;
   const sectorAngle = 360 / n;
@@ -790,30 +797,41 @@ function spinWheel() {
 
   const finalAngle = (n - idx) * sectorAngle - sectorAngle / 2 + (Math.random() * 10 - 5);
   wheelRot += 1800 + finalAngle;
-  document.getElementById("wheel-svg").style.transform = `rotate(${wheelRot}deg)`;
+  const wheelSvg = document.getElementById("wheel-svg");
+  if(wheelSvg) wheelSvg.style.transform = `rotate(${wheelRot}deg)`;
 
   setTimeout(() => {
     const prize = PRIZES[idx];
     spinning = false;
-    btn.disabled = false;
-    pointer.classList.remove("spinning");
+    if(btn) btn.disabled = false;
+    if(pointer) pointer.classList.remove("spinning");
+    
+    if(!prize) return;
+
     totalSpins++;
-    document.getElementById("total-spins-display").textContent = totalSpins;
-    document.getElementById("nav-spins").textContent = totalSpins;
+    const tsDisp = document.getElementById("total-spins-display");
+    if(tsDisp) tsDisp.textContent = totalSpins;
+    const nsDisp = document.getElementById("nav-spins");
+    if(nsDisp) nsDisp.textContent = totalSpins;
 
     if (prize.value > 0) {
       if (prize.value > bestPrize) {
         bestPrize = prize.value;
-        document.getElementById("best-prize-display").textContent = prize.value + " ر";
+        const bpDisp = document.getElementById("best-prize-display");
+        if(bpDisp) bpDisp.textContent = prize.value + " ر";
       }
       addBalance(prize.value);
-      status.className = "win";
-      status.innerHTML = `🎉 مبروك! فزت بـ <strong style="color:var(--gold-light)">${prize.label}</strong>`;
+      if(status) {
+        status.className = "win";
+        status.innerHTML = `🎉 مبروك! فزت بـ <strong style="color:var(--gold-light)">${prize.label}</strong>`;
+      }
       showToast(prize.label);
       launchConfetti(60);
     } else {
-      status.className = "";
-      status.innerHTML = `🎁 حصلت على: <strong style="color:var(--cream)">${prize.label}</strong>`;
+      if(status) {
+        status.className = "";
+        status.innerHTML = `🎁 حصلت على: <strong style="color:var(--cream)">${prize.label}</strong>`;
+      }
     }
     saveToHistory("عجلة الحظ", prize.label, prize.value > 0);
     saveSate();
@@ -825,6 +843,7 @@ function spinWheel() {
 // ============================================================
 function buildBoxes() {
   const grid = document.getElementById("boxes-grid");
+  if(!grid) return;
   grid.innerHTML = "";
   const shuffle = [...BOX_PRIZES].sort(() => Math.random() - 0.5);
   shuffle.forEach((p, i) => {
@@ -849,7 +868,6 @@ function buildBoxes() {
       const lastBox = localStorage.getItem("last_box_time");
       const dayInMillis = 24 * 60 * 60 * 1000;
 
-      // التحقق من الوقت مع تجاهل العداد إذا قام المدير بالتصفير
       if (lastBox && parseInt(lastBox) > globalResetTime && (now - parseInt(lastBox) < dayInMillis)) {
         const remaining = dayInMillis - (now - parseInt(lastBox));
         const hours = Math.floor(remaining / (1000 * 60 * 60));
@@ -874,6 +892,7 @@ function buildBoxes() {
         prizeLabel.textContent = p.label;
         prizeLabel.style.cssText = "font-size:0.9rem;font-weight:700";
         back.appendChild(prizeLabel);
+        
         if (p.value > 0) {
           back.classList.remove("no-win");
           back.classList.add("win-big");
@@ -883,7 +902,8 @@ function buildBoxes() {
         }
         
         totalSpins++;
-        document.getElementById("nav-spins").textContent = totalSpins;
+        const nsDisp = document.getElementById("nav-spins");
+        if(nsDisp) nsDisp.textContent = totalSpins;
         
         saveToHistory("صناديق المفاجآت", p.label, p.value > 0);
         saveSate();
@@ -910,7 +930,7 @@ function saveToHistory(source, prize, isCash) {
 
 function renderHistory(data) {
   const list = document.getElementById("history-list");
-  if (!data || data.length === 0) return;
+  if (!list || !data || data.length === 0) return;
   list.innerHTML = data.map((r, i) => `
     <div class="history-item" style="animation-delay:${i*0.05}s">
       <div class="history-source">
@@ -927,23 +947,27 @@ function renderHistory(data) {
 function addBalance(amount) {
   balance += amount;
   const el = document.getElementById("nav-balance");
-  el.textContent = balance;
-  el.classList.remove("balance-pop");
-  void el.offsetWidth; 
-  el.classList.add("balance-pop");
+  if(el) {
+    el.textContent = balance;
+    el.classList.remove("balance-pop");
+    void el.offsetWidth; 
+    el.classList.add("balance-pop");
+  }
   saveSate();
 }
 
 // ============================================================
-//  NEW FEATURES (Name, History, Cooldown Timer)
+//  NEW FEATURES
 // ============================================================
 function changeName() {
   const newName = prompt("أدخل اسمك الجديد:", playerName);
   if (newName && newName.trim().length >= 2) {
     playerName = newName.trim();
     localStorage.setItem("eid_name", playerName);
-    document.getElementById("nav-name").textContent = playerName;
-    document.getElementById("welcome-name").textContent = playerName;
+    const nName = document.getElementById("nav-name");
+    if(nName) nName.textContent = playerName;
+    const wName = document.getElementById("welcome-name");
+    if(wName) wName.textContent = playerName;
   } else if (newName !== null) {
     alert("عذراً، الاسم قصير جداً!");
   }
@@ -953,13 +977,15 @@ function clearHistory() {
   if (confirm("هل أنت متأكد أنك تريد مسح سجل الجوائز؟ (هذا الإجراء لا يمكن التراجع عنه)")) {
     localStorage.removeItem("eid_history");
     renderHistory([]); 
-    document.getElementById("history-list").innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:20px;font-size:0.9rem">تم مسح السجل بنجاح ✨</p>';
+    const hList = document.getElementById("history-list");
+    if(hList) hList.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:20px;font-size:0.9rem">تم مسح السجل بنجاح ✨</p>';
   }
 }
 
 let spinTimerInterval;
 function checkSpinCooldown() {
   const btn = document.getElementById("spin-btn");
+  if(!btn) return;
   const lastSpin = localStorage.getItem("last_wheel_time");
   const dayInMillis = 24 * 60 * 60 * 1000;
 
@@ -993,7 +1019,9 @@ function checkSpinCooldown() {
 let toastTimer = null;
 function showToast(prize) {
   const t = document.getElementById("win-toast");
-  document.getElementById("toast-prize").textContent = prize;
+  const p = document.getElementById("toast-prize");
+  if(!t || !p) return;
+  p.textContent = prize;
   t.classList.add("show");
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove("show"), 3500);
@@ -1022,11 +1050,11 @@ function launchConfetti(count) {
 }
 
 // ============================================================
-//  FLOW CONTROLS (NEW)
+//  FLOW CONTROLS
 // ============================================================
-
 function goToSelection() {
   const input = document.getElementById("name-input");
+  if (!input) return;
   if (input.value.trim().length < 2) {
     input.style.borderColor = "#ef4444";
     input.style.boxShadow = "0 0 0 4px rgba(239,68,68,0.15)";
@@ -1038,64 +1066,94 @@ function goToSelection() {
   }
   playerName = input.value.trim();
   localStorage.setItem("eid_name", playerName);
-  document.getElementById("nav-name").textContent = playerName;
-  document.getElementById("welcome-name").textContent = playerName;
+  const nName = document.getElementById("nav-name");
+  if(nName) nName.textContent = playerName;
   
-  document.getElementById("welcome-screen").classList.add("out");
+  const scr = document.getElementById("welcome-screen");
+  if(scr) scr.classList.add("out");
   showSelectionScreen();
 }
 
 function showSelectionScreen() {
-  document.getElementById("main-wrap").style.display = "none";
-  document.getElementById("nav-back-btn").style.display = "none";
+  const wrap = document.getElementById("main-wrap");
+  if(wrap) wrap.style.display = "none";
+  const btn = document.getElementById("nav-back-btn");
+  if(btn) btn.style.display = "none";
   
   const selScreen = document.getElementById("selection-screen");
-  selScreen.style.opacity = "1";
-  selScreen.style.pointerEvents = "all";
-  selScreen.style.transform = "scale(1)";
+  if(selScreen) {
+    selScreen.style.opacity = "1";
+    selScreen.style.pointerEvents = "all";
+    selScreen.style.transform = "scale(1)";
+  }
   
-  document.getElementById("welcome-name").textContent = playerName;
+  const wName = document.getElementById("welcome-name");
+  if(wName) wName.textContent = playerName;
 }
 
 function startGame(gameType) {
   currentGame = gameType;
   
   const selScreen = document.getElementById("selection-screen");
-  selScreen.style.opacity = "0";
-  selScreen.style.pointerEvents = "none";
-  selScreen.style.transform = "scale(1.05)";
+  if(selScreen) {
+    selScreen.style.opacity = "0";
+    selScreen.style.pointerEvents = "none";
+    selScreen.style.transform = "scale(1.05)";
+  }
   
-  document.getElementById("main-wrap").style.display = "block";
-  document.getElementById("nav-back-btn").style.display = "block";
+  const wrap = document.getElementById("main-wrap");
+  if(wrap) wrap.style.display = "block";
+  const btn = document.getElementById("nav-back-btn");
+  if(btn) btn.style.display = "block";
   
   if(gameType === 'wheel') {
-    document.getElementById("card-wheel").classList.remove("hidden-card");
-    document.getElementById("card-boxes").classList.add("hidden-card");
-    document.getElementById("main-hero-title").textContent = "عجلة الحظ تنتظرك!";
-    document.getElementById("main-hero-sub").textContent = "لف العجلة واكتشف هديتك";
+    const cw = document.getElementById("card-wheel");
+    if(cw) cw.classList.remove("hidden-card");
+    const cb = document.getElementById("card-boxes");
+    if(cb) cb.classList.add("hidden-card");
+    
+    const mt = document.getElementById("main-hero-title");
+    if(mt) mt.textContent = "عجلة الحظ تنتظرك!";
+    const ms = document.getElementById("main-hero-sub");
+    if(ms) ms.textContent = "لف العجلة واكتشف هديتك";
   } else {
-    document.getElementById("card-boxes").classList.remove("hidden-card");
-    document.getElementById("card-wheel").classList.add("hidden-card");
-    document.getElementById("main-hero-title").textContent = "صناديق المفاجآت!";
-    document.getElementById("main-hero-sub").textContent = "اختر صندوقاً بحذر واكتشف ما بداخله";
+    const cb = document.getElementById("card-boxes");
+    if(cb) cb.classList.remove("hidden-card");
+    const cw = document.getElementById("card-wheel");
+    if(cw) cw.classList.add("hidden-card");
+    
+    const mt = document.getElementById("main-hero-title");
+    if(mt) mt.textContent = "صناديق المفاجآت!";
+    const ms = document.getElementById("main-hero-sub");
+    if(ms) ms.textContent = "اختر صندوقاً بحذر واكتشف ما بداخله";
   }
 }
 
 // ============================================================
-//  STORAGE
+//  STORAGE & FIREBASE SYNC
 // ============================================================
 function saveSate() {
   localStorage.setItem("eid_name", playerName);
   localStorage.setItem("eid_balance", balance);
   localStorage.setItem("eid_spins", totalSpins);
   localStorage.setItem("eid_best", bestPrize);
-  document.getElementById("nav-balance").textContent = balance;
-  document.getElementById("nav-spins").textContent = totalSpins;
-  document.getElementById("total-spins-display").textContent = totalSpins;
-  if (bestPrize > 0) document.getElementById("best-prize-display").textContent = bestPrize + " ر";
+  
+  const navBal = document.getElementById("nav-balance");
+  if(navBal) navBal.textContent = balance;
+  
+  const navSpin = document.getElementById("nav-spins");
+  if(navSpin) navSpin.textContent = totalSpins;
+  
+  const tsDisp = document.getElementById("total-spins-display");
+  if(tsDisp) tsDisp.textContent = totalSpins;
+  
+  const bpDisp = document.getElementById("best-prize-display");
+  if(bpDisp && bestPrize > 0) bpDisp.textContent = bestPrize + " ر";
   
   if (typeof syncToFirebase === "function") {
-    syncToFirebase();
+    try {
+      syncToFirebase();
+    } catch(e) { console.error("Firebase Sync Error:", e); }
   }
 }
 
@@ -1106,9 +1164,11 @@ function loadState() {
     balance    = parseInt(localStorage.getItem("eid_balance")  || "0");
     totalSpins = parseInt(localStorage.getItem("eid_spins")    || "0");
     bestPrize  = parseInt(localStorage.getItem("eid_best")     || "0");
-    document.getElementById("nav-name").textContent = playerName;
+    const nName = document.getElementById("nav-name");
+    if(nName) nName.textContent = playerName;
     
-    document.getElementById("welcome-screen").classList.add("out");
+    const scr = document.getElementById("welcome-screen");
+    if(scr) scr.classList.add("out");
     showSelectionScreen();
     
     saveSate();
@@ -1118,9 +1178,12 @@ function loadState() {
   }
 }
 
-document.getElementById("name-input").addEventListener("keydown", e => {
-  if (e.key === "Enter") goToSelection();
-});
+const nameInp = document.getElementById("name-input");
+if(nameInp) {
+  nameInp.addEventListener("keydown", e => {
+    if (e.key === "Enter") goToSelection();
+  });
+}
 
 // ============================================================
 //  INIT
@@ -1131,6 +1194,7 @@ window.onload = () => {
   loadState();
 };
 </script>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -1149,9 +1213,6 @@ window.onload = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const eid = urlParams.get('eid');
   
-  // ============================================================
-  //  الاستماع لمعلومات الغرفة (الاسم، الإيقاف، وتصفير العداد)
-  // ============================================================
   database.ref('eids/' + eid + '/info').on('value', (snapshot) => {
     const info = snapshot.val();
     if (info) {
@@ -1160,16 +1221,14 @@ window.onload = () => {
       const familyNameElement = document.getElementById('family-name');
       if(familyNameElement) familyNameElement.innerText = "عيدية " + info.adminName;
 
-      // التحقق من حالة إيقاف اللعبة
       if (info.isActive === false) {
         alert("عذراً، صاحب العيدية قام بإيقاف اللعبة مؤقتاً!");
         document.body.innerHTML = "<h1 style='color:white; text-align:center; margin-top:50px;'>الفعالية متوقفة حالياً ⏸️</h1>";
       }
       
-      // استقبال أمر تصفير العداد
       if (info.globalResetTime) {
         globalResetTime = info.globalResetTime;
-        checkSpinCooldown(); // تحديث العداد فوراً إذا تم التصفير
+        checkSpinCooldown(); 
       }
     }
   });
@@ -1181,19 +1240,19 @@ window.onload = () => {
 
   function syncToFirebase() {
     if (playerName && eid) {
-      database.ref('eids/' + eid + '/users/' + playerName).set({
+      // ⚠️ هذا السطر مهم جداً لمنع توقف الكود إذا احتوى الاسم على رموز
+      const safeKey = playerName.replace(/[.#$\[\]\/]/g, "_");
+      
+      database.ref('eids/' + eid + '/users/' + safeKey).set({
         name: playerName,
         balance: balance,
         spins: totalSpins,
         bestPrize: bestPrize,
         lastActive: new Date().toLocaleString('ar-SA')
-      });
+      }).catch(err => console.log("خطأ في الاتصال بالسحابة: ", err));
     }
   }
 
-  // ============================================================
-  //  الاستماع للجوائز وتحديث العجلة والصناديق
-  // ============================================================
   const wheelColors = [
     {color:"#065f46", textCol:"#34d399"},
     {color:"#1e293b", textCol:"#94a3b8"},
@@ -1241,3 +1300,4 @@ window.onload = () => {
 </script>
 </body>
 </html>
+
