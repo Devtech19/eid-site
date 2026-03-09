@@ -644,6 +644,7 @@ let bestPrize  = 0;
 let wheelRot   = 0;
 let spinning   = false;
 let currentGame = ""; // 'wheel' or 'boxes'
+let globalResetTime = 0; // متغير لمعرفة متى تم تصفير العداد من قبل المدير
 
 // ============================================================
 //  PARTICLES
@@ -754,17 +755,17 @@ function buildWheel() {
 }
 
 // ============================================================
-//  SPIN (تم إضافة نظام 24 ساعة)
+//  SPIN
 // ============================================================
 function spinWheel() {
   if (spinning) return;
 
-  // --- نظام التحقق من 24 ساعة ---
   const now = Date.now();
   const lastSpin = localStorage.getItem("last_wheel_time");
   const dayInMillis = 24 * 60 * 60 * 1000;
 
-  if (lastSpin && (now - parseInt(lastSpin) < dayInMillis)) {
+  // التحقق من الوقت مع تجاهل العداد إذا قام المدير بالتصفير
+  if (lastSpin && parseInt(lastSpin) > globalResetTime && (now - parseInt(lastSpin) < dayInMillis)) {
     const remaining = dayInMillis - (now - parseInt(lastSpin));
     const hours = Math.floor(remaining / (1000 * 60 * 60));
     const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
@@ -772,9 +773,7 @@ function spinWheel() {
     return;
   }
   
-  // حفظ وقت اللعبة الحالية
   localStorage.setItem("last_wheel_time", now.toString());
-  // -----------------------------
 
   spinning = true;
   const btn = document.getElementById("spin-btn");
@@ -822,7 +821,7 @@ function spinWheel() {
 }
 
 // ============================================================
-//  BOXES (تم إضافة نظام 24 ساعة)
+//  BOXES
 // ============================================================
 function buildBoxes() {
   const grid = document.getElementById("boxes-grid");
@@ -846,19 +845,18 @@ function buildBoxes() {
     wrap.onclick = function() {
       if (this.classList.contains("revealed")) return;
 
-      // --- نظام التحقق من 24 ساعة ---
       const now = Date.now();
       const lastBox = localStorage.getItem("last_box_time");
       const dayInMillis = 24 * 60 * 60 * 1000;
 
-      if (lastBox && (now - parseInt(lastBox) < dayInMillis)) {
+      // التحقق من الوقت مع تجاهل العداد إذا قام المدير بالتصفير
+      if (lastBox && parseInt(lastBox) > globalResetTime && (now - parseInt(lastBox) < dayInMillis)) {
         const remaining = dayInMillis - (now - parseInt(lastBox));
         const hours = Math.floor(remaining / (1000 * 60 * 60));
         const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
         alert(`عذراً! يمكنك فتح صندوق واحد كل 24 ساعة 🎁\nالرجاء العودة بعد: ${hours} ساعة و ${minutes} دقيقة ⏳`);
         return;
       }
-      // -----------------------------
 
       if (document.querySelectorAll(".box-wrap.revealed").length >= 1) {
         this.style.animation = "shakeBox 0.4s ease";
@@ -866,7 +864,6 @@ function buildBoxes() {
         return;
       }
       
-      // حفظ وقت فتح الصندوق
       localStorage.setItem("last_box_time", now.toString());
 
       this.classList.add("revealed");
@@ -955,7 +952,7 @@ function changeName() {
 function clearHistory() {
   if (confirm("هل أنت متأكد أنك تريد مسح سجل الجوائز؟ (هذا الإجراء لا يمكن التراجع عنه)")) {
     localStorage.removeItem("eid_history");
-    renderHistory([]); // تحديث الواجهة لتكون فارغة
+    renderHistory([]); 
     document.getElementById("history-list").innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:20px;font-size:0.9rem">تم مسح السجل بنجاح ✨</p>';
   }
 }
@@ -966,9 +963,9 @@ function checkSpinCooldown() {
   const lastSpin = localStorage.getItem("last_wheel_time");
   const dayInMillis = 24 * 60 * 60 * 1000;
 
-  clearInterval(spinTimerInterval); // تنظيف أي عداد سابق
+  clearInterval(spinTimerInterval); 
 
-  if (lastSpin && (Date.now() - parseInt(lastSpin) < dayInMillis)) {
+  if (lastSpin && parseInt(lastSpin) > globalResetTime && (Date.now() - parseInt(lastSpin) < dayInMillis)) {
     btn.disabled = true;
     spinTimerInterval = setInterval(() => {
       const remaining = dayInMillis - (Date.now() - parseInt(lastSpin));
@@ -1028,7 +1025,6 @@ function launchConfetti(count) {
 //  FLOW CONTROLS (NEW)
 // ============================================================
 
-// الخطوة الأولى: بعد ادخال الاسم، ننتقل لشاشة الاختيار
 function goToSelection() {
   const input = document.getElementById("name-input");
   if (input.value.trim().length < 2) {
@@ -1045,12 +1041,10 @@ function goToSelection() {
   document.getElementById("nav-name").textContent = playerName;
   document.getElementById("welcome-name").textContent = playerName;
   
-  // إخفاء الترحيب وإظهار شاشة الاختيار
   document.getElementById("welcome-screen").classList.add("out");
   showSelectionScreen();
 }
 
-// إظهار شاشة الاختيار (ممكن نستخدمها لزر الرجوع بعد)
 function showSelectionScreen() {
   document.getElementById("main-wrap").style.display = "none";
   document.getElementById("nav-back-btn").style.display = "none";
@@ -1060,25 +1054,20 @@ function showSelectionScreen() {
   selScreen.style.pointerEvents = "all";
   selScreen.style.transform = "scale(1)";
   
-  // تحديث الاسم في حال كان مخزن مسبقاً
   document.getElementById("welcome-name").textContent = playerName;
 }
 
-// الخطوة الثانية: بدء اللعبة المختارة
 function startGame(gameType) {
   currentGame = gameType;
   
-  // إخفاء شاشة الاختيار
   const selScreen = document.getElementById("selection-screen");
   selScreen.style.opacity = "0";
   selScreen.style.pointerEvents = "none";
   selScreen.style.transform = "scale(1.05)";
   
-  // إظهار المحتوى الرئيسي وزر الرجوع
   document.getElementById("main-wrap").style.display = "block";
   document.getElementById("nav-back-btn").style.display = "block";
   
-  // إخفاء/إظهار الكروت حسب الاختيار
   if(gameType === 'wheel') {
     document.getElementById("card-wheel").classList.remove("hidden-card");
     document.getElementById("card-boxes").classList.add("hidden-card");
@@ -1105,7 +1094,6 @@ function saveSate() {
   document.getElementById("total-spins-display").textContent = totalSpins;
   if (bestPrize > 0) document.getElementById("best-prize-display").textContent = bestPrize + " ر";
   
-  // 👇 هذا هو السطر الذي نسيته! (رفع البيانات لفايربيس)
   if (typeof syncToFirebase === "function") {
     syncToFirebase();
   }
@@ -1120,14 +1108,13 @@ function loadState() {
     bestPrize  = parseInt(localStorage.getItem("eid_best")     || "0");
     document.getElementById("nav-name").textContent = playerName;
     
-    // إخفاء الترحيب والانتقال لاختيار اللعبة مباشرة
     document.getElementById("welcome-screen").classList.add("out");
     showSelectionScreen();
     
     saveSate();
     const h = JSON.parse(localStorage.getItem("eid_history") || "[]");
     renderHistory(h);
-	checkSpinCooldown();
+    checkSpinCooldown();
   }
 }
 
@@ -1161,14 +1148,15 @@ window.onload = () => {
 
   const urlParams = new URLSearchParams(window.location.search);
   const eid = urlParams.get('eid');
-  // جلب اسم العائلة وحالة اللعبة من قاعدة البيانات
+  
+  // ============================================================
+  //  الاستماع لمعلومات الغرفة (الاسم، الإيقاف، وتصفير العداد)
+  // ============================================================
   database.ref('eids/' + eid + '/info').on('value', (snapshot) => {
     const info = snapshot.val();
     if (info) {
-      // إظهار اسم العائلة في عنوان الصفحة أو أي مكان تريده
       document.title = "عيدية " + info.adminName + " 🎁";
       
-      // إذا أردت إظهار الاسم داخل الصفحة، يمكنك إضافة عنصر HTML يحمل id="family-name"
       const familyNameElement = document.getElementById('family-name');
       if(familyNameElement) familyNameElement.innerText = "عيدية " + info.adminName;
 
@@ -1177,16 +1165,20 @@ window.onload = () => {
         alert("عذراً، صاحب العيدية قام بإيقاف اللعبة مؤقتاً!");
         document.body.innerHTML = "<h1 style='color:white; text-align:center; margin-top:50px;'>الفعالية متوقفة حالياً ⏸️</h1>";
       }
+      
+      // استقبال أمر تصفير العداد
+      if (info.globalResetTime) {
+        globalResetTime = info.globalResetTime;
+        checkSpinCooldown(); // تحديث العداد فوراً إذا تم التصفير
+      }
     }
   });
 
-  // تنبيه إذا دخل شخص بدون رابط مخصص
   if (!eid && window.location.href.includes("github.io")) {
     alert("عذراً، هذا الرابط غير مكتمل. سيتم توجيهك لإنشاء عيدية جديدة.");
     window.location.href = "start.html";
   }
 
-  // رفع البيانات لفايربيس
   function syncToFirebase() {
     if (playerName && eid) {
       database.ref('eids/' + eid + '/users/' + playerName).set({
@@ -1198,7 +1190,10 @@ window.onload = () => {
       });
     }
   }
-  // --- كود تحديث الجوائز المباشر ---
+
+  // ============================================================
+  //  الاستماع للجوائز وتحديث العجلة والصناديق
+  // ============================================================
   const wheelColors = [
     {color:"#065f46", textCol:"#34d399"},
     {color:"#1e293b", textCol:"#94a3b8"},
@@ -1213,7 +1208,6 @@ window.onload = () => {
   database.ref('eids/' + eid + '/prizes').on('value', (snapshot) => {
     const dbPrizes = snapshot.val();
     if (dbPrizes) {
-      // تفريغ المصفوفات القديمة (الثابتة)
       PRIZES.length = 0;
       BOX_PRIZES.length = 0;
       
@@ -1221,13 +1215,9 @@ window.onload = () => {
       for (let key in dbPrizes) {
         let p = dbPrizes[key];
         
-        // استخراج المبلغ المالي من الاسم، وإذا لم يكن مبلغاً يصبح صفر
         let val = (p.type === 'money') ? (parseInt(p.name) || 0) : 0;
-        
-        // اختيار لون متناسق بالتسلسل
         let colorObj = wheelColors[i % wheelColors.length];
         
-        // إضافة الجائزة للعجلة
         PRIZES.push({
           label: p.name,
           value: val,
@@ -1235,7 +1225,6 @@ window.onload = () => {
           textCol: colorObj.textCol
         });
         
-        // إضافة الجائزة للصناديق (تصبح "جائزة كبرى 🔥" إذا كانت قيمتها 100 أو أكثر)
         BOX_PRIZES.push({
           label: p.name,
           value: val,
@@ -1245,7 +1234,6 @@ window.onload = () => {
         i++;
       }
       
-      // إعادة رسم العجلة والصناديق بالبيانات الجديدة
       if (typeof buildWheel === "function") buildWheel();
       if (typeof buildBoxes === "function") buildBoxes();
     }
