@@ -744,10 +744,28 @@ function buildWheel() {
 }
 
 // ============================================================
-//  SPIN
+//  SPIN (تم إضافة نظام 24 ساعة)
 // ============================================================
 function spinWheel() {
   if (spinning) return;
+
+  // --- نظام التحقق من 24 ساعة ---
+  const now = Date.now();
+  const lastSpin = localStorage.getItem("last_wheel_time");
+  const dayInMillis = 24 * 60 * 60 * 1000;
+
+  if (lastSpin && (now - parseInt(lastSpin) < dayInMillis)) {
+    const remaining = dayInMillis - (now - parseInt(lastSpin));
+    const hours = Math.floor(remaining / (1000 * 60 * 60));
+    const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+    alert(`عذراً! يمكنك لف العجلة مرة واحدة كل 24 ساعة 🎡\nالرجاء العودة بعد: ${hours} ساعة و ${minutes} دقيقة ⏳`);
+    return;
+  }
+  
+  // حفظ وقت اللعبة الحالية
+  localStorage.setItem("last_wheel_time", now.toString());
+  // -----------------------------
+
   spinning = true;
   const btn = document.getElementById("spin-btn");
   const status = document.getElementById("wheel-status");
@@ -794,7 +812,7 @@ function spinWheel() {
 }
 
 // ============================================================
-//  BOXES
+//  BOXES (تم إضافة نظام 24 ساعة)
 // ============================================================
 function buildBoxes() {
   const grid = document.getElementById("boxes-grid");
@@ -817,11 +835,30 @@ function buildBoxes() {
 
     wrap.onclick = function() {
       if (this.classList.contains("revealed")) return;
+
+      // --- نظام التحقق من 24 ساعة ---
+      const now = Date.now();
+      const lastBox = localStorage.getItem("last_box_time");
+      const dayInMillis = 24 * 60 * 60 * 1000;
+
+      if (lastBox && (now - parseInt(lastBox) < dayInMillis)) {
+        const remaining = dayInMillis - (now - parseInt(lastBox));
+        const hours = Math.floor(remaining / (1000 * 60 * 60));
+        const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+        alert(`عذراً! يمكنك فتح صندوق واحد كل 24 ساعة 🎁\nالرجاء العودة بعد: ${hours} ساعة و ${minutes} دقيقة ⏳`);
+        return;
+      }
+      // -----------------------------
+
       if (document.querySelectorAll(".box-wrap.revealed").length >= 1) {
         this.style.animation = "shakeBox 0.4s ease";
         setTimeout(()=>this.style.animation="", 400);
         return;
       }
+      
+      // حفظ وقت فتح الصندوق
+      localStorage.setItem("last_box_time", now.toString());
+
       this.classList.add("revealed");
       const back = this.querySelector(".box-back");
       setTimeout(() => {
@@ -841,7 +878,7 @@ function buildBoxes() {
         totalSpins++;
         document.getElementById("nav-spins").textContent = totalSpins;
         
-        saveToHistory("صناديق 3D", p.label, p.value > 0);
+        saveToHistory("صناديق المفاجآت", p.label, p.value > 0);
         saveSate();
       }, 350);
 
