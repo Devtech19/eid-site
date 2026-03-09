@@ -198,8 +198,25 @@ th { color: var(--text-muted); background: rgba(0,0,0,0.2); }
         tbody.innerHTML += `<tr><td>${p.name}</td><td>${typeStr}</td><td><button class="action-btn" onclick="deletePrize('${key}')">حذف</button></td></tr>`;
       }
     });
+	// تعبئة حقل الرابط
+	document.getElementById('game-link-input').value = window.location.href.split('admin.html')[0] + 'index.html?eid=' + eid;
   }
+// دالة نسخ الرابط
+	  function copyGameLink() {
+		const copyText = document.getElementById('game-link-input');
+		copyText.select();
+		document.execCommand("copy");
+		alert("تم نسخ رابط اللعبة بنجاح! شاركه الآن 🔗");
+	  }
 
+	  // دالة تصفير وقت الانتظار للجميع
+	  function resetCooldowns() {
+		if(confirm("هل أنت متأكد من تصفير العداد للجميع؟\nسيتمكن جميع من لعبوا اليوم من اللعب مرة أخرى فوراً!")) {
+		  // إرسال وقت التصفير الحالي لقاعدة البيانات
+		  database.ref('eids/' + eid + '/info/globalResetTime').set(Date.now());
+		  alert("تم تصفير وقت الانتظار بنجاح! يمكن للجميع اللعب الآن 🎡");
+		}
+	  }
   // ==== دوال الأزرار ====
 
   // التصدير إلى Excel / CSV
@@ -253,4 +270,3 @@ th { color: var(--text-muted); background: rgba(0,0,0,0.2); }
 </script>
 </body>
 </html>
-
