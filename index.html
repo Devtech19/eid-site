@@ -1198,6 +1198,58 @@ window.onload = () => {
       });
     }
   }
+  // --- كود تحديث الجوائز المباشر ---
+  const wheelColors = [
+    {color:"#065f46", textCol:"#34d399"},
+    {color:"#1e293b", textCol:"#94a3b8"},
+    {color:"#3b0764", textCol:"#c084fc"},
+    {color:"#431407", textCol:"#fb923c"},
+    {color:"#713f12", textCol:"#fbbf24"},
+    {color:"#1e1b4b", textCol:"#818cf8"},
+    {color:"#134e4a", textCol:"#2dd4bf"},
+    {color:"#0c4a6e", textCol:"#38bdf8"}
+  ];
+
+  database.ref('eids/' + eid + '/prizes').on('value', (snapshot) => {
+    const dbPrizes = snapshot.val();
+    if (dbPrizes) {
+      // تفريغ المصفوفات القديمة (الثابتة)
+      PRIZES.length = 0;
+      BOX_PRIZES.length = 0;
+      
+      let i = 0;
+      for (let key in dbPrizes) {
+        let p = dbPrizes[key];
+        
+        // استخراج المبلغ المالي من الاسم، وإذا لم يكن مبلغاً يصبح صفر
+        let val = (p.type === 'money') ? (parseInt(p.name) || 0) : 0;
+        
+        // اختيار لون متناسق بالتسلسل
+        let colorObj = wheelColors[i % wheelColors.length];
+        
+        // إضافة الجائزة للعجلة
+        PRIZES.push({
+          label: p.name,
+          value: val,
+          color: colorObj.color,
+          textCol: colorObj.textCol
+        });
+        
+        // إضافة الجائزة للصناديق (تصبح "جائزة كبرى 🔥" إذا كانت قيمتها 100 أو أكثر)
+        BOX_PRIZES.push({
+          label: p.name,
+          value: val,
+          big: (val >= 100)
+        });
+        
+        i++;
+      }
+      
+      // إعادة رسم العجلة والصناديق بالبيانات الجديدة
+      if (typeof buildWheel === "function") buildWheel();
+      if (typeof buildBoxes === "function") buildBoxes();
+    }
+  });
 </script>
 </body>
 </html>
