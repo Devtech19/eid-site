@@ -464,6 +464,22 @@ body {
   .pill-label { display: none; }
   .nav-logo-area { gap: 8px; }
 }
+/* =================== CLEAR BUTTON =================== */
+.btn-clear {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-clear:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fff;
+}
 </style>
 </head>
 <body>
@@ -508,19 +524,10 @@ body {
     <div class="nav-back" id="nav-back-btn" onclick="showSelectionScreen()">🔙 رجوع</div>
   </div>
   <div class="nav-pills">
-    <div class="pill">
+	<div class="pill" style="cursor: pointer;" onclick="changeName()" title="تغيير الاسم">
       <span class="pill-icon">👤</span>
       <span class="pill-value" id="nav-name">—</span>
-    </div>
-    <div class="pill">
-      <span class="pill-icon">💰</span>
-      <span class="pill-value" id="nav-balance">0</span>
-      <span class="pill-label">ريال</span>
-    </div>
-    <div class="pill">
-      <span class="pill-icon">🎯</span>
-      <span class="pill-value" id="nav-spins">0</span>
-      <span class="pill-label">مرة</span>
+      <span style="font-size: 0.7rem; margin-right: 4px;">✏️</span>
     </div>
   </div>
 </nav>
@@ -588,10 +595,13 @@ body {
     <div class="boxes-grid" id="boxes-grid"></div>
   </div>
 
-  <div class="card">
-    <div class="card-title">
-      <div class="icon-badge">📜</div>
-      سجل جوائزك
+	<div class="card">
+    <div class="card-title" style="justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="icon-badge">📜</div>
+        سجل جوائزك
+      </div>
+      <button class="btn-clear" onclick="clearHistory()">🗑️ مسح</button>
     </div>
     <div id="history-list" class="history-list">
       <p style="text-align:center;color:var(--text-muted);padding:20px;font-size:0.9rem">لم تفز بأي جائزة بعد... حظ سعيد! ✨</p>
@@ -928,6 +938,59 @@ function addBalance(amount) {
 }
 
 // ============================================================
+//  NEW FEATURES (Name, History, Cooldown Timer)
+// ============================================================
+function changeName() {
+  const newName = prompt("أدخل اسمك الجديد:", playerName);
+  if (newName && newName.trim().length >= 2) {
+    playerName = newName.trim();
+    localStorage.setItem("eid_name", playerName);
+    document.getElementById("nav-name").textContent = playerName;
+    document.getElementById("welcome-name").textContent = playerName;
+  } else if (newName !== null) {
+    alert("عذراً، الاسم قصير جداً!");
+  }
+}
+
+function clearHistory() {
+  if (confirm("هل أنت متأكد أنك تريد مسح سجل الجوائز؟ (هذا الإجراء لا يمكن التراجع عنه)")) {
+    localStorage.removeItem("eid_history");
+    renderHistory([]); // تحديث الواجهة لتكون فارغة
+    document.getElementById("history-list").innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:20px;font-size:0.9rem">تم مسح السجل بنجاح ✨</p>';
+  }
+}
+
+let spinTimerInterval;
+function checkSpinCooldown() {
+  const btn = document.getElementById("spin-btn");
+  const lastSpin = localStorage.getItem("last_wheel_time");
+  const dayInMillis = 24 * 60 * 60 * 1000;
+
+  clearInterval(spinTimerInterval); // تنظيف أي عداد سابق
+
+  if (lastSpin && (Date.now() - parseInt(lastSpin) < dayInMillis)) {
+    btn.disabled = true;
+    spinTimerInterval = setInterval(() => {
+      const remaining = dayInMillis - (Date.now() - parseInt(lastSpin));
+      
+      if (remaining <= 0) {
+        clearInterval(spinTimerInterval);
+        btn.disabled = false;
+        btn.textContent = "دوّر العجلة";
+      } else {
+        const h = Math.floor(remaining / (1000 * 60 * 60)).toString().padStart(2, '0');
+        const m = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+        const s = Math.floor((remaining % (1000 * 60)) / 1000).toString().padStart(2, '0');
+        btn.textContent = `⏳ ${h}:${m}:${s}`;
+      }
+    }, 1000);
+  } else {
+    btn.disabled = false;
+    btn.textContent = "دوّر العجلة";
+  }
+}
+
+// ============================================================
 //  TOAST & CONFETTI
 // ============================================================
 let toastTimer = null;
@@ -1058,6 +1121,7 @@ function loadState() {
     saveSate();
     const h = JSON.parse(localStorage.getItem("eid_history") || "[]");
     renderHistory(h);
+	checkSpinCooldown();
   }
 }
 
