@@ -6,166 +6,40 @@
 <title>لوحة التحكم | عيديتك المميزة 🎁</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --gold: #d4a017;
-  --gold-light: #f0c040;
-  --gold-pale: #fdf3dc;
-  --emerald: #065f46;
-  --emerald-mid: #059669;
-  --emerald-bright: #34d399;
-  --cream: #fefce8;
-  --dark: #0a1f14;
-  --dark2: #0f2d1c;
-  --dark3: #1a3a28;
-  --text-main: #fefce8;
-  --text-muted: #86efac;
-}
-
+/* نفس الـ CSS السابق بدون تغيير */
+:root { --gold: #d4a017; --gold-light: #f0c040; --cream: #fefce8; --dark: #0a1f14; --text-muted: #86efac; }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: 'Tajawal', sans-serif;
-  background: var(--dark);
-  color: var(--text-main);
-  min-height: 100vh;
-  padding-top: 90px;
-}
-
-/* =================== NAVBAR =================== */
-.navbar {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(10,31,20,0.85);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(212,160,23,0.15);
-  padding: 14px 28px;
-  display: flex; justify-content: space-between; align-items: center;
-}
-.nav-logo {
-  font-family: 'Amiri', serif;
-  font-size: 1.4rem; font-weight: 700;
-  color: var(--gold-light);
-  text-shadow: 0 0 12px rgba(240,192,64,0.4);
-}
-.admin-badge {
-  background: rgba(212,160,23,0.15);
-  border: 1px solid var(--gold);
-  color: var(--gold-light);
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: bold;
-}
-
-/* =================== LAYOUT & TABS =================== */
-.container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
-}
-.tabs {
-  display: flex; gap: 10px; margin-bottom: 30px;
-  overflow-x: auto; padding-bottom: 10px;
-}
-.tab-btn {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(212,160,23,0.2);
-  color: var(--cream);
-  padding: 12px 24px;
-  border-radius: 12px;
-  font-family: 'Tajawal'; font-size: 1.1rem;
-  cursor: pointer; transition: all 0.3s;
-  white-space: nowrap;
-}
-.tab-btn:hover {
-  background: rgba(212,160,23,0.1);
-}
-.tab-btn.active {
-  background: linear-gradient(135deg, rgba(212,160,23,0.2), rgba(212,160,23,0.05));
-  border-color: var(--gold-light);
-  color: var(--gold-light);
-  font-weight: bold;
-}
-.tab-content { display: none; animation: fadeIn 0.4s ease forwards; }
-.tab-content.active { display: block; }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* =================== CARDS =================== */
-.card {
-  background: linear-gradient(160deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
-  border: 1px solid rgba(212,160,23,0.12);
-  border-radius: 20px;
-  padding: 24px;
-  margin-bottom: 24px;
-  backdrop-filter: blur(8px);
-}
-.card-header {
-  font-family: 'Amiri', serif;
-  font-size: 1.4rem; color: var(--gold-light);
-  margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
-}
-
-/* =================== STATS GRID =================== */
-.stats-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;
-}
-.stat-box {
-  background: rgba(0,0,0,0.2);
-  border: 1px solid rgba(212,160,23,0.2);
-  border-radius: 16px; padding: 20px; text-align: center;
-}
-.stat-icon { font-size: 2rem; margin-bottom: 10px; }
+body { font-family: 'Tajawal', sans-serif; background: var(--dark); color: var(--cream); min-height: 100vh; padding-top: 90px; }
+.navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10,31,20,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(212,160,23,0.15); padding: 14px 28px; display: flex; justify-content: space-between; align-items: center; }
+.nav-logo { font-family: 'Amiri', serif; font-size: 1.4rem; font-weight: 700; color: var(--gold-light); }
+.admin-badge { background: rgba(212,160,23,0.15); border: 1px solid var(--gold); color: var(--gold-light); padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+.container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+.tabs { display: flex; gap: 10px; margin-bottom: 30px; overflow-x: auto; padding-bottom: 10px; }
+.tab-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(212,160,23,0.2); color: var(--cream); padding: 12px 24px; border-radius: 12px; font-family: 'Tajawal'; cursor: pointer; transition: all 0.3s; }
+.tab-btn.active { background: linear-gradient(135deg, rgba(212,160,23,0.2), rgba(212,160,23,0.05)); border-color: var(--gold-light); color: var(--gold-light); }
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeIn 0.4s; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.card { background: rgba(255,255,255,0.04); border: 1px solid rgba(212,160,23,0.12); border-radius: 20px; padding: 24px; margin-bottom: 24px; }
+.card-header { font-family: 'Amiri', serif; font-size: 1.4rem; color: var(--gold-light); margin-bottom: 20px; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+.stat-box { background: rgba(0,0,0,0.2); border: 1px solid rgba(212,160,23,0.2); border-radius: 16px; padding: 20px; text-align: center; }
 .stat-value { font-size: 2.2rem; font-weight: bold; color: var(--gold-light); }
 .stat-label { color: var(--text-muted); font-size: 0.95rem; }
-
-/* =================== TABLES =================== */
-.table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; min-width: 600px; }
-th, td {
-  padding: 14px 16px; text-align: right;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-th {
-  color: var(--text-muted); font-weight: 400; font-size: 0.95rem;
-  background: rgba(0,0,0,0.2);
-}
-td { color: var(--cream); font-size: 1rem; }
-tr:hover td { background: rgba(255,255,255,0.02); }
-.action-btn {
-  background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #fca5a5; padding: 6px 12px; border-radius: 8px; cursor: pointer; transition: 0.3s;
-}
-.action-btn:hover { background: rgba(239, 68, 68, 0.3); color: #fff; }
-
-/* =================== FORMS =================== */
+th, td { padding: 14px 16px; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05); }
+th { color: var(--text-muted); background: rgba(0,0,0,0.2); }
+.action-btn { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
 .form-group { margin-bottom: 15px; }
-.form-group label { display: block; color: var(--text-muted); margin-bottom: 8px; font-size: 0.9rem; }
-.input-fancy {
-  width: 100%; padding: 14px 16px;
-  background: rgba(0,0,0,0.2);
-  border: 1px solid rgba(212,160,23,0.3);
-  border-radius: 12px; color: var(--cream);
-  font-family: 'Tajawal'; font-size: 1rem;
-  outline: none; transition: border-color 0.3s;
-}
-.input-fancy:focus { border-color: var(--gold); }
-.btn-gold {
-  background: linear-gradient(135deg, #b8860b 0%, var(--gold-light) 50%, #b8860b 100%);
-  color: #0a1f14; border: none; padding: 12px 30px; border-radius: 12px;
-  font-family: 'Tajawal'; font-size: 1.1rem; font-weight: bold; cursor: pointer;
-  box-shadow: 0 4px 15px rgba(212,160,23,0.3); transition: 0.3s;
-}
-.btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(212,160,23,0.5); }
+.input-fancy { width: 100%; padding: 14px 16px; background: rgba(0,0,0,0.2); border: 1px solid rgba(212,160,23,0.3); border-radius: 12px; color: var(--cream); }
+.btn-gold { background: linear-gradient(135deg, #b8860b 0%, var(--gold-light) 50%, #b8860b 100%); color: #0a1f14; border: none; padding: 12px 30px; border-radius: 12px; font-weight: bold; cursor: pointer; }
 </style>
 </head>
 <body>
 
 <nav class="navbar">
-  <div class="nav-logo">✦ لوحة تحكم العيدية ✦</div>
-  <div class="admin-badge">المدير 👑</div>
+  <div class="nav-logo" id="admin-navbar-title">✦ لوحة التحكم ✦</div>
+  <div class="admin-badge" id="game-status-badge">الفعالية تعمل 🟢</div>
 </nav>
 
 <div class="container">
@@ -178,23 +52,11 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 
   <div id="dashboard" class="tab-content active">
     <div class="card">
-      <div class="card-header">نظرة عامة على الفعالية</div>
+      <div class="card-header">نظرة عامة</div>
       <div class="stats-grid">
-        <div class="stat-box">
-          <div class="stat-icon">👥</div>
-          <div class="stat-value" id="stat-users">15</div>
-          <div class="stat-label">إجمالي المشاركين</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-icon">💰</div>
-          <div class="stat-value" id="stat-money">1,450 ر.س</div>
-          <div class="stat-label">إجمالي المبالغ الموزعة</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-icon">🎡</div>
-          <div class="stat-value" id="stat-spins">42</div>
-          <div class="stat-label">عدد اللفات/السحبات</div>
-        </div>
+        <div class="stat-box"><div class="stat-value" id="stat-users">0</div><div class="stat-label">المشاركين</div></div>
+        <div class="stat-box"><div class="stat-value" id="stat-money">0</div><div class="stat-label">المبالغ الموزعة</div></div>
+        <div class="stat-box"><div class="stat-value" id="stat-spins">0</div><div class="stat-label">إجمالي السحبات</div></div>
       </div>
     </div>
   </div>
@@ -202,19 +64,10 @@ tr:hover td { background: rgba(255,255,255,0.02); }
   <div id="users" class="tab-content">
     <div class="card">
       <div class="card-header">قائمة المشاركين</div>
-      <div class="table-wrap">
+      <div style="overflow-x: auto;">
         <table>
-          <thead>
-            <tr>
-              <th>الاسم</th>
-              <th>الرصيد المكتسب</th>
-              <th>عدد السحبات</th>
-              <th>تاريخ المشاركة</th>
-              <th>إجراء</th>
-            </tr>
-          </thead>
-          <tbody id="users-table-body">
-            </tbody>
+          <thead><tr><th>الاسم</th><th>الرصيد المكتسب</th><th>السحبات</th><th>آخر نشاط</th><th>إجراء</th></tr></thead>
+          <tbody id="users-table-body"></tbody>
         </table>
       </div>
     </div>
@@ -222,96 +75,50 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 
   <div id="prizes" class="tab-content">
     <div class="card">
-      <div class="card-header">إضافة عيدية / جائزة جديدة</div>
+      <div class="card-header">إضافة جائزة جديدة</div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-        <div class="form-group">
-          <label>اسم الجائزة (مثال: 50 ريال، ايفون، حظ أوفر)</label>
-          <input type="text" class="input-fancy" placeholder="اكتب اسم الجائزة...">
-        </div>
-        <div class="form-group">
-          <label>النوع</label>
-          <select class="input-fancy">
-            <option>مبلغ مالي</option>
-            <option>هدية عينية</option>
-            <option>بدون جائزة</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>نسبة الظهور (حظ الفوز %)</label>
-          <input type="number" class="input-fancy" placeholder="مثال: 10">
-        </div>
+        <input type="text" id="prize-name" class="input-fancy" placeholder="اسم الجائزة (مثال: 50 ريال)">
+        <select id="prize-type" class="input-fancy">
+          <option value="money">مبلغ مالي</option>
+          <option value="gift">هدية عينية</option>
+          <option value="none">حظ أوفر</option>
+        </select>
       </div>
-      <button class="btn-gold" style="margin-top: 10px;">إضافة الجائزة ➕</button>
+      <button class="btn-gold" style="margin-top: 15px;" onclick="addPrize()">إضافة الجائزة ➕</button>
     </div>
-
     <div class="card">
-      <div class="card-header">الجوائز الحالية في العجلة والصناديق</div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>الجائزة</th>
-              <th>النوع</th>
-              <th>نسبة الظهور</th>
-              <th>اللون</th>
-              <th>إجراء</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>100 ريال</td>
-              <td>مبلغ مالي</td>
-              <td>5%</td>
-              <td><span style="color:var(--gold)">ذهبي</span></td>
-              <td><button class="action-btn">حذف</button></td>
-            </tr>
-            <tr>
-              <td>حظ أوفر</td>
-              <td>بدون جائزة</td>
-              <td>40%</td>
-              <td><span style="color:gray">رمادي</span></td>
-              <td><button class="action-btn">حذف</button></td>
-            </tr>
-            <tr>
-              <td>50 ريال</td>
-              <td>مبلغ مالي</td>
-              <td>15%</td>
-              <td><span style="color:var(--emerald-bright)">أخضر</span></td>
-              <td><button class="action-btn">حذف</button></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <div class="card-header">الجوائز الحالية</div>
+      <table>
+        <thead><tr><th>الجائزة</th><th>النوع</th><th>إجراء</th></tr></thead>
+        <tbody id="prizes-table-body"></tbody>
+      </table>
     </div>
   </div>
 
   <div id="settings" class="tab-content">
     <div class="card">
       <div class="card-header">إعدادات النظام</div>
-      <p style="color: var(--text-muted); margin-bottom: 20px;">يمكنك من هنا تصفير جميع الإحصائيات أو إيقاف الفعالية مؤقتاً.</p>
-      
       <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-        <button class="btn-gold" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: white;">📥 تصدير بيانات المشاركين (Excel)</button>
-        <button class="btn-gold" style="background: linear-gradient(135deg, #065f46, #10b981); color: white;">▶️ تشغيل / إيقاف اللعبة</button>
-        <button class="btn-gold" style="background: linear-gradient(135deg, #7f1d1d, #ef4444); color: white;" onclick="resetSystem()">⚠️ تصفير جميع البيانات</button>
+        <button class="btn-gold" style="background: #2563eb; color: white;" onclick="exportToCSV()">📥 تصدير Excel</button>
+        <button class="btn-gold" style="background: #059669; color: white;" onclick="toggleGameState()">▶️ إيقاف/تشغيل الفعالية</button>
+        <button class="btn-gold" style="background: #dc2626; color: white;" onclick="resetSystem()">⚠️ تصفير البيانات</button>
       </div>
     </div>
   </div>
 </div>
 
-<script>
-  // دالة التنقل بين التبويبات
-  function switchTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-    
-    document.getElementById(tabId).classList.add('active');
-    event.currentTarget.classList.add('active');
-  }
-</script> <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+
+  // 🔴 تأكد من وضع نفس بيانات الـ Config هنا 🔴
   firebase.initializeApp({
     apiKey: "AIzaSyBWS4-TuX4igV5xyYrXpPMN5nSL2hkLrIg",
     authDomain: "eidx-e3327.firebaseapp.com",
@@ -325,75 +132,113 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 
   const urlParams = new URLSearchParams(window.location.search);
   const eid = urlParams.get('eid');
+  if (!eid) window.location.href = "start.html";
 
-  if (!eid) {
-    alert("رابط لوحة التحكم غير صالح!");
-    window.location.href = "start.html";
-  }
+  let isGameActive = true;
+  let allUsersData = {}; // لحفظها عند التصدير
 
-  // التحقق من الرقم السري أولاً
+  // التحقق من الرقم السري
   database.ref('eids/' + eid + '/info/pin').once('value').then((snapshot) => {
     const realPin = snapshot.val();
-    
     if (realPin) {
-      const userPin = prompt("🔒 الرجاء إدخال الرقم السري الخاص بلوحة التحكم:");
-      if (userPin !== realPin) {
-        alert("الرقم السري خاطئ! سيتم تحويلك للصفحة الرئيسية.");
-        window.location.href = "start.html";
-        return; 
-      }
+      const userPin = prompt("🔒 الرجاء إدخال الرقم السري:");
+      if (userPin !== realPin) return window.location.href = "start.html";
     }
-
-    loadDashboardData();
+    loadData();
   });
 
-  function loadDashboardData() {
-    database.ref('eids/' + eid + '/users').on('value', (snapshot) => {
-      const users = snapshot.val();
+  function loadData() {
+    // 1. جلب بيانات العائلة وحالة اللعبة
+    database.ref('eids/' + eid + '/info').on('value', snap => {
+      const info = snap.val();
+      if(info) {
+        document.getElementById('admin-navbar-title').innerText = "لوحة تحكم: " + info.adminName;
+        isGameActive = info.isActive !== false;
+        document.getElementById('game-status-badge').innerText = isGameActive ? "الفعالية تعمل 🟢" : "الفعالية متوقفة 🔴";
+      }
+    });
+
+    // 2. جلب المشاركين
+    database.ref('eids/' + eid + '/users').on('value', snap => {
+      allUsersData = snap.val() || {};
       const tbody = document.getElementById('users-table-body');
       tbody.innerHTML = '';
+      let totalUsers = 0, totalMoney = 0, totalSpins = 0;
       
-      let totalUsersCount = 0;
-      let totalMoneyCount = 0;
-      let totalSpinsCount = 0;
-      
-      if (users) {
-        Object.keys(users).forEach(key => {
-          const u = users[key];
-          totalUsersCount++;
-          totalSpinsCount += u.spins || 0;
-          totalMoneyCount += u.balance || 0;
-          
-          tbody.innerHTML += `
-            <tr>
-              <td><strong>${u.name}</strong></td>
-              <td style="color: #4ade80;">${u.balance} ر.س</td>
-              <td>${u.spins}</td>
-              <td style="color: var(--text-muted); font-size: 0.85rem;">${u.lastActive}</td>
-              <td><button class="action-btn" onclick="deleteUser('${key}')">حذف</button></td>
-            </tr>
-          `;
-        });
-      } else {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">لا يوجد مشاركين حتى الآن</td></tr>`;
+      for(let key in allUsersData) {
+        let u = allUsersData[key];
+        totalUsers++; totalSpins += u.spins || 0; totalMoney += u.balance || 0;
+        tbody.innerHTML += `<tr><td>${u.name}</td><td style="color:#4ade80">${u.balance}</td><td>${u.spins}</td><td>${u.lastActive}</td><td><button class="action-btn" onclick="deleteUser('${key}')">حذف</button></td></tr>`;
       }
+      if(totalUsers === 0) tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">لا يوجد مشاركين</td></tr>`;
       
-      document.getElementById('stat-users').innerText = totalUsersCount;
-      document.getElementById('stat-money').innerText = totalMoneyCount + " ر.س";
-      document.getElementById('stat-spins').innerText = totalSpinsCount;
+      document.getElementById('stat-users').innerText = totalUsers;
+      document.getElementById('stat-money').innerText = totalMoney + " ر.س";
+      document.getElementById('stat-spins').innerText = totalSpins;
+    });
+
+    // 3. جلب الجوائز
+    database.ref('eids/' + eid + '/prizes').on('value', snap => {
+      const prizes = snap.val() || {};
+      const tbody = document.getElementById('prizes-table-body');
+      tbody.innerHTML = '';
+      for(let key in prizes) {
+        let p = prizes[key];
+        let typeStr = p.type === 'money' ? 'مبلغ مالي' : (p.type === 'gift' ? 'هدية عينية' : 'حظ أوفر');
+        tbody.innerHTML += `<tr><td>${p.name}</td><td>${typeStr}</td><td><button class="action-btn" onclick="deletePrize('${key}')">حذف</button></td></tr>`;
+      }
     });
   }
 
-  function deleteUser(playerName) {
-    if(confirm('هل أنت متأكد من حذف هذا المشارك؟')) {
-      database.ref('eids/' + eid + '/users/' + playerName).remove();
+  // ==== دوال الأزرار ====
+
+  // التصدير إلى Excel / CSV
+  function exportToCSV() {
+    if(Object.keys(allUsersData).length === 0) return alert("لا يوجد بيانات لتصديرها!");
+    let csv = "\uFEFFالاسم,الرصيد,عدد السحبات,آخر نشاط\n"; // \uFEFF لدعم اللغة العربية في Excel
+    for(let key in allUsersData) {
+      let u = allUsersData[key];
+      csv += `${u.name},${u.balance},${u.spins},${u.lastActive}\n`;
+    }
+    let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    let link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "بيانات_العيدية.csv";
+    link.click();
+  }
+
+  // تشغيل / إيقاف اللعبة
+  function toggleGameState() {
+    isGameActive = !isGameActive;
+    database.ref('eids/' + eid + '/info/isActive').set(isGameActive);
+    alert(isGameActive ? "تم تشغيل الفعالية! يمكن للمشاركين اللعب الآن." : "تم إيقاف الفعالية! لن يتمكن أحد من اللعب.");
+  }
+
+  // التصفير
+  function resetSystem() {
+    if(confirm('هل أنت متأكد من تصفير ومسح جميع بيانات المشاركين؟')) {
+      database.ref('eids/' + eid + '/users').remove();
+      alert("تم التصفير بنجاح!");
     }
   }
 
-  function resetSystem() {
-    if(confirm('⚠️ هل أنت متأكد من تصفير جميع البيانات؟')) {
-      database.ref('eids/' + eid + '/users').remove();
-    }
+  // حذف لاعب
+  function deleteUser(key) {
+    if(confirm('حذف المشارك؟')) database.ref('eids/' + eid + '/users/' + key).remove();
+  }
+
+  // إضافة جائزة
+  function addPrize() {
+    const name = document.getElementById('prize-name').value;
+    const type = document.getElementById('prize-type').value;
+    if(!name) return alert('اكتب اسم الجائزة');
+    database.ref('eids/' + eid + '/prizes').push({ name: name, type: type });
+    document.getElementById('prize-name').value = '';
+  }
+
+  // حذف جائزة
+  function deletePrize(key) {
+    if(confirm('حذف الجائزة؟')) database.ref('eids/' + eid + '/prizes/' + key).remove();
   }
 </script>
 </body>
