@@ -52,6 +52,24 @@
   
   firebase.initializeApp(firebaseConfig);
   const database = firebase.database();
+  // --- كود استرجاع الغرفة السابقة ---
+  window.onload = function() {
+    const savedEid = localStorage.getItem('my_saved_eid');
+    if (savedEid) {
+      currentEid = savedEid;
+      const baseUrl = window.location.href.split('start.html')[0];
+      
+      document.getElementById('adminLink').innerText = `${baseUrl}admin.html?eid=${savedEid}`;
+      document.getElementById('gameLink').innerText = `${baseUrl}index.html?eid=${savedEid}`;
+      document.getElementById('links').style.display = 'block';
+      
+      // رسالة ترحيبية
+      const welcomeMsg = document.createElement('p');
+      welcomeMsg.innerHTML = "🌟 <b>مرحباً بعودتك! لقد وجدنا لوحة التحكم الخاصة بك:</b>";
+      welcomeMsg.style.color = "#34d399";
+      document.getElementById('links').prepend(welcomeMsg);
+    }
+  };
 
   let currentEid = "";
 
@@ -72,7 +90,7 @@
       pin: pin,
       createdAt: new Date().toLocaleString('ar-SA')
     }).then(() => {
-      // هذا الجزء كان مفقوداً وهو ضروري لإنشاء الروابط
+	localStorage.setItem('my_saved_eid', currentEid);
       const baseUrl = window.location.href.replace('start.html', '');
       document.getElementById('adminLink').innerText = `${baseUrl}admin.html?eid=${currentEid}`;
       document.getElementById('gameLink').innerText = `${baseUrl}index.html?eid=${currentEid}`;
