@@ -90,7 +90,7 @@
       pin: pin,
       createdAt: new Date().toLocaleString('ar-SA')
     }).then(() => {
-	localStorage.setItem('my_saved_eid', currentEid);
+	  localStorage.setItem('my_saved_eid', currentEid);
       const baseUrl = window.location.href.replace('start.html', '');
       document.getElementById('adminLink').innerText = `${baseUrl}admin.html?eid=${currentEid}`;
       document.getElementById('gameLink').innerText = `${baseUrl}index.html?eid=${currentEid}`;
@@ -125,4 +125,5 @@
 
 </body>
 </html>
+
 
