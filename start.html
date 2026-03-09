@@ -104,7 +104,25 @@
   function goToAdmin() {
     window.location.href = `admin.html?eid=${currentEid}`;
   }
+	window.onload = function() {
+    const savedEid = localStorage.getItem('my_saved_eid');
+    if (savedEid) {
+      currentEid = savedEid;
+      const baseUrl = window.location.href.split('start.html')[0];
+      
+      document.getElementById('adminLink').innerText = `${baseUrl}admin.html?eid=${savedEid}`;
+      document.getElementById('gameLink').innerText = `${baseUrl}index.html?eid=${savedEid}`;
+      document.getElementById('links').style.display = 'block';
+      
+      // رسالة ترحيبية لصاحب العيدية
+      const welcomeMsg = document.createElement('p');
+      welcomeMsg.innerHTML = "🌟 <b>مرحباً بعودتك! لقد وجدنا لوحة التحكم الخاصة بك:</b>";
+      welcomeMsg.style.color = "#34d399";
+      document.getElementById('links').prepend(welcomeMsg);
+    }
+  };
 </script>
 
 </body>
 </html>
+
