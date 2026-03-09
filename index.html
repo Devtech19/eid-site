@@ -1161,6 +1161,24 @@ window.onload = () => {
 
   const urlParams = new URLSearchParams(window.location.search);
   const eid = urlParams.get('eid');
+  // جلب اسم العائلة وحالة اللعبة من قاعدة البيانات
+  database.ref('eids/' + eid + '/info').on('value', (snapshot) => {
+    const info = snapshot.val();
+    if (info) {
+      // إظهار اسم العائلة في عنوان الصفحة أو أي مكان تريده
+      document.title = "عيدية " + info.adminName + " 🎁";
+      
+      // إذا أردت إظهار الاسم داخل الصفحة، يمكنك إضافة عنصر HTML يحمل id="family-name"
+      const familyNameElement = document.getElementById('family-name');
+      if(familyNameElement) familyNameElement.innerText = "عيدية " + info.adminName;
+
+      // التحقق من حالة إيقاف اللعبة
+      if (info.isActive === false) {
+        alert("عذراً، صاحب العيدية قام بإيقاف اللعبة مؤقتاً!");
+        document.body.innerHTML = "<h1 style='color:white; text-align:center; margin-top:50px;'>الفعالية متوقفة حالياً ⏸️</h1>";
+      }
+    }
+  });
 
   // تنبيه إذا دخل شخص بدون رابط مخصص
   if (!eid && window.location.href.includes("github.io")) {
